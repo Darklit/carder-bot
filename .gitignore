@@ -1,0 +1,5 @@
+config.js
+/node_modules
+*.txt
+template.js
+start.bat
