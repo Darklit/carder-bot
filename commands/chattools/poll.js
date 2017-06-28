@@ -26,11 +26,13 @@ class PollCommand extends Commando.Command {
   run(message,args){
     var options1 = [];
     var optionNum = 0;
+    //Asks the user for the options and then puts them in an array.
     message.reply('What do you want for the options? Say stop to stop creating options.');
     const collector = message.channel.createCollector(
       m => m.author.id == message.author.id,
     );
     collector.on('message', m => {
+      //Stops collecting options if they say stop.
       if(m.content.toLowerCase() == 'stop'){
         collector.stop();
       }else{
@@ -40,6 +42,7 @@ class PollCommand extends Commando.Command {
       }
     });
     collector.on('end', collected => {
+      //Creates the json text being sent to the strawpoll api.
       var test = {
         title: args,
         options: options1,
@@ -50,14 +53,19 @@ class PollCommand extends Commando.Command {
   }
 
   post(text,message){
+    //Requests to post data to strawpoll.
     request.post({
       url: 'https://strawpoll.me/api/v2/polls',
       json: text,
       followAllRedirects: true
     }, function(error, response, body){
       console.log('error:', error);
-      console.log(response.statusCode);
-      message.reply('http://www.strawpoll.me/' + body.id);
+      //200 status code is basically a success code.
+      if(response.statusCode == 200){
+        message.reply('http://www.strawpoll.me/' + body.id);
+      }else{
+        message.reply('Error!');
+      }
     });
   }
 }

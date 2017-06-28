@@ -34,7 +34,7 @@ class CleanCommand extends Commando.Command {
     })
     .catch(console.error);
   }
-
+//Retrieves data from the money.txt file.
   readMoney(){
     return new Promise(function (fulfill, reject){
       fs.readFile(file, 'utf8', function (err,res){
@@ -43,6 +43,7 @@ class CleanCommand extends Commando.Command {
       });
     });
   }
+  //Removes unnecessary spaces in the money file. Just cleans it up.
   cleanUp(message,data){
     var moneyList = data.split('  ');
     for(var i = 0; i<moneyList.length;i++){

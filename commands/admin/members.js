@@ -23,6 +23,7 @@ class MembersCommand extends Commando.Command {
   }
 
   run(message,args){
+    //Just lists all members in the server. Used for debugging mostly.
     var members = message.guild.members.array();
     var newMembers = [];
     for(var i = 0; i<members.length;i++){

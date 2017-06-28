@@ -29,7 +29,7 @@ class WorkCommand extends Commando.Command {
       */
     });
   }
-
+//Subject to change
   run(message,args){
     var client1 = this.client;
     var mes = message;

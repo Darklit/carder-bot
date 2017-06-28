@@ -28,7 +28,7 @@ class SetMoneyCommand extends Commando.Command {
 
     });
   }
-
+//Subject to change
   run(message,args){
     var user = args.name.toLowerCase().replace('_',' ');
     while(user.includes('_')){

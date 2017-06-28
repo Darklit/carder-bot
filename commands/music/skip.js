@@ -35,7 +35,7 @@ class SkipCommand extends Commando.Command {
         var skips = 1;
         var skipped = [message.author.id];
         const collector = message.channel.createCollector(filter);
-
+        //Collects messages and if they say I they are added to the vote count.
         collector.on('message',message =>{
           var temp = 0;
           if(message.content.toLowerCase() == 'i'){
@@ -53,6 +53,7 @@ class SkipCommand extends Commando.Command {
             }
             message.channel.sendMessage(skips + '/' + (mems.length - 1) + ' voted to skip.');
             if(skips>= Math.floor((mems.length/2))){
+              //If the majority of people vote then it will skip.
               client1.registry.resolveCommand('music:play').dispatcher.end();
               message.channel.sendMessage('Skipped!');
               collector.stop();

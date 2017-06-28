@@ -24,6 +24,7 @@ class ForceSkipCommand extends Commando.Command {
   }
 
   run(message,args){
+    //If the owner issues this command it will skip the current song.
     if(message.author.id == config.ownerid){
       this.client.registry.resolveCommand('music:play').dispatcher.end();
       message.reply('Skipped!');

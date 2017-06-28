@@ -24,6 +24,7 @@ class StopCommand extends Commando.Command {
   }
 
   run(message,args){
+    //Checks if you are the owner and then completely shuts down the bot.
     if(message.author.id == config.ownerid){
       var useClient = this.client;
       message.reply('Shutting down...');

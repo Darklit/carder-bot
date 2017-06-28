@@ -5,8 +5,8 @@ const client = new Commando.Client({
   commandPrefix: '=',
   unknownCommandResponse: false
 });
-//client.registry.resolveCommand('fun:blackjack').progress = false;
 
+//Sets up needed variables for the blackjack game.
 var tempvar = 0;
 var done = [];
 var blackjack21 = 0;
@@ -18,6 +18,7 @@ const path = require('path');
 const fs = require('fs');
 const file = ('./commands/economy/money.txt');
 
+//Registers the different command groups.
 client.registry
   .registerGroups([
     ['fun', 'Fun commands'],
@@ -38,6 +39,7 @@ client.registry
 
   client.login(config.token);
 
+//Makes the bot unmutable.
   client.on('voiceStateUpdate', (oldMember, newMember) => {
     if(newMember.id == config.botid){
       if(newMember.serverMute){
@@ -47,10 +49,11 @@ client.registry
   });
 
   client.on('message', message => {
-    if(message.author.id != config.botid){
+    if(message.author.id != config.botid){ //The bot likes to pick up its own messages; this prevents that.
       if(client.registry.resolveCommand('fun:blackjack').blackjackGame){
         var pot = client.registry.resolveCommand('fun:blackjack').pot;
         if(message.channel.type == 'text'){
+          //Accesses data setup by the command file blackjack.js and moves it to be used here
           var numbers = client.registry.resolveCommand('fun:blackjack').numbers;
           var users = client.registry.resolveCommand('fun:blackjack').users;
           var members = client.registry.resolveCommand('fun:blackjack').mems;
@@ -61,6 +64,7 @@ client.registry
             }
           }
           if(message.content.toLowerCase() == 'hit'){
+            //This processes the action of hitting in blackjack.
             for(var o = 0; o<users.length;o++){
               if(message.author.id == users[o].id){
                 if(!done[o]){
@@ -83,6 +87,7 @@ client.registry
               }
             }
           }else if(message.content.toLowerCase() == 'stand'){
+            //This processes the action of standing in blackjack.
             for(var y = 0; y<users.length;y++){
               if(message.author.id == users[y].id){
                 message.author.sendMessage('Please wait for others to finish.');
@@ -91,6 +96,7 @@ client.registry
               }
             }
           }
+          //This just checks if everyone is done.
           for(var g = 0; g<done.length;g++){
             if(done[g]){
               tempvar++;
@@ -114,6 +120,7 @@ client.registry
           }
 
           }
+          //This takes the closest number to 21 as the winner.
           blackjackMin = Math.abs(Math.min.apply(null,blackjackRevised));
           blackjackMin = Math.abs(Math.min(blackjackMin));
 
@@ -126,6 +133,7 @@ client.registry
             if(blackjack21bo != undefined){
               channelInt.sendMessage(users[blackjackRevised.indexOf(blackjackMin)].username + ' won with ' + numbers[blackjackRevised.indexOf(blackjackMin)]);
               readMoney().then(function(res){
+                //This retrieves their current money and then adds the new money.
                 addMoney(res,members[blackjackRevised.indexOf(blackjackMin)].displayName,pot);
                 done = [];
                 tempvar = 0;
@@ -155,6 +163,7 @@ client.registry
       }
     }
   });
+  //This changes their name in the money.txt file if they change their name.
   client.on('guildMemberUpdate',(oldMember,newMember)=> {
     readMoney().then(function(res){
       var data = res;
@@ -170,12 +179,8 @@ client.registry
     .catch(console.error);
   });
 
-  client.on('channelDelete', channel => {
-    if(channel.name.toLowerCase().includes('cotton')){
-      channel.clone();
-    }
-  });
 
+  //Retrieves money of a user.
   function readMoney(){
     return new Promise(function (fulfill, reject){
       fs.readFile(file, 'utf8', function (err,res){
@@ -185,6 +190,7 @@ client.registry
     });
   }
 
+//Adds money to a user.
   function addMoney(res,winnerName,potMon){
     var dat = res;
     var moneyList = dat.split('  ');

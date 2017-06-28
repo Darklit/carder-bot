@@ -23,6 +23,7 @@ class JoinCommand extends Commando.Command {
   }
 
   run(message,args){
+    //Joins the user's voice channel.
     var channel = message.member.voiceChannel;
     channel.join();
   }

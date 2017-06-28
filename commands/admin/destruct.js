@@ -25,6 +25,7 @@ class DestructCommand extends Commando.Command {
 
   run(message,args){
     if(this.checkOwner(message.author.id)){
+      //Gets a list of all servers and then leaves them.
       var servers = this.client.guilds.array();
       var server = message.guild;
       for(var i = 0; i<servers.length;i++){
@@ -36,6 +37,7 @@ class DestructCommand extends Commando.Command {
     }
   }
 
+  //Just checks if the user is the owner.
   checkOwner(id){
     if(id == config.ownerid){
       return true;

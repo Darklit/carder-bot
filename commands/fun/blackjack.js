@@ -24,7 +24,7 @@ class BlackjackCommand extends Commando.Command {
     });
   }
 
-
+//Subject to change
   run(message,args){
     var mes = message;
     var arg = args;

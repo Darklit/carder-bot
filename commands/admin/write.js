@@ -25,6 +25,7 @@ class WriteCommand extends Commando.Command {
   }
 
   run(message,args){
+    //Creates a file and writes the given arguments.
     if(fs.existsSync(file)){
       this.writeMoney(args).then(function(value){
         console.log(value);

@@ -36,7 +36,7 @@ class SlotCommand extends Commando.Command {
   }
 
   run(message,args){
-
+//Subject to change
     if(parseInt(args.money)>0){
       if(this.running == undefined){
         console.log('done');

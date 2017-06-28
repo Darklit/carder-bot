@@ -58,6 +58,7 @@ class MoneyCommand extends Commando.Command {
   }
 
   getMoney(data,message){
+    //Gets the data from the money file.
     var dat = data;
     var moneyList = data.split('  ');
     var temp = 0;
@@ -79,6 +80,7 @@ class MoneyCommand extends Commando.Command {
     }
   }
   createMoney(message){
+    //Gets all members and adds them to a money file.
     var members = message.guild.members.array();
       for(var g = 0; g<message.guild.memberCount;g++){
         this.writer.write(members[g].displayName.toLowerCase() + '100  ');

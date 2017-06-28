@@ -33,6 +33,7 @@ class GameCommand extends Commando.Command {
   }
 
   newGame(file){
+    //Creates a new game file.
     var newData = [
       'hp:100',
       'money:100',

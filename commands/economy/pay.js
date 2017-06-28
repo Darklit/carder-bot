@@ -28,7 +28,7 @@ class PayCommand extends Commando.Command {
 
     });
   }
-
+//Subject to change
   run(message,args){
     if(args.amount >0){
       console.log('started');

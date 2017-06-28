@@ -29,11 +29,14 @@ class PlayCommand extends Commando.Command {
   run(message,args){
     this.setup();
     if(message.member.voiceChannel != undefined){
+      //Checks if the link is a youtube link.
       if((args.includes('youtube.com/watch?')) ||( args.includes('youtu.be'))){
         this.queue[this.currentqueue] = args;
         if(!this.playing){
+          //If the bot is not playing music it will start playing the song.
           this.playMusic(message,this.queue[this.currentqueue]);
         }else{
+          //If the bot is playing music the song is added to the queue.
           this.queue[this.queue.length] = args;
           message.reply('Added to the queue');
         }
@@ -46,6 +49,7 @@ class PlayCommand extends Commando.Command {
 
   }
   setup(){
+    //If it's the first time running the command, variables will be set.
     if(this.currentqueue == undefined){
       this.currentqueue = 0;
     }
@@ -65,11 +69,13 @@ class PlayCommand extends Commando.Command {
       com.playing = true;
       const stream = ytdl(link, {filter: 'audioonly'});
       stream.on('info',title => {
+        //Sets the bot's game title to the music title.
         client1.user.setGame(title.title);
       })
-      com.dispatcher = connection.playStream(stream,streamOptions);
+      com.dispatcher = connection.playStream(stream,streamOptions); //Starts playing a stream of music.
       com.dispatcher.on('end',reason => {
         if(reason.toLowerCase().includes('stream is')){
+          //If the song ends it deletes the song in the queue and plays the next one.
           client1.user.setGame(null);
           com.queue[com.currentqueue] = '';
           com.currentqueue++;
@@ -83,6 +89,7 @@ class PlayCommand extends Commando.Command {
             mes.member.voiceChannel.leave();
           }
         }else if(reason == 'user'){
+          //Basically does the same as the first but only if skipped forcefully.
           client1.user.setGame(null);
           com.queue[com.currentqueue] = '';
           com.currentqueue++;

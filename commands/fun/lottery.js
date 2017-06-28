@@ -23,7 +23,7 @@ class LotteryCommand extends Commando.Command {
       */
     });
   }
-
+//Subject to change
   run(message,args){
     console.log('works!');
     var client1 = this.client;

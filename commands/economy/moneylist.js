@@ -23,7 +23,7 @@ class MoneyListCommand extends Commando.Command {
       */
     });
   }
-
+//All subject to change.
   run(message,args){
     var client1 = this.client;
     var thismessage = message;

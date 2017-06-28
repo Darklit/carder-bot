@@ -39,6 +39,7 @@ class ClearCommand extends Commando.Command {
       var go = 0;
       messageDel = messages.array();
       var delMessage = [];
+      //Checks if the user wants to delete messages from another user.
       if(args.user == undefined || args.user == ''){
         message.channel.bulkDelete(args.amount);
         message.reply(args.amount + ' messages removed.');
@@ -58,6 +59,7 @@ class ClearCommand extends Commando.Command {
     },1000);
   }
   delMessages(messageDel,message,args){
+    //Retrieves a certain amount of messages and then deletes them.
     var go = 0;
     var delMessage = [];
     for(var o = 0; o<messageDel.length;o++){
