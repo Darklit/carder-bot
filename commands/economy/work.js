@@ -34,7 +34,7 @@ class WorkCommand extends Commando.Command {
     var right = false;
     var num1 = Math.floor(Math.random()*50);
     var num2 = Math.floor(Math.random()*50);
-    var sign = sign[Math.floor(Math.random()*signs.length)];
+    var sign = signs[Math.floor(Math.random()*signs.length)];
     if(sign == 'x'){
       answer = num1 * num2;
     }else if(sign == '+'){
@@ -42,19 +42,23 @@ class WorkCommand extends Commando.Command {
     }else if(sign == '-'){
       answer = num1 - num2;
     }
+    console.log(answer);
     var file = ('./commands/economy/money/' + message.guild.name.toLowerCase() + '/' + message.member.displayName.toLowerCase() + '.txt');
-    if(!fs.existsSync('./commands/economy/money/' + message.guild.name.toLowerCase())){
+    if(!(fs.existsSync('./commands/economy/money/' + message.guild.name.toLowerCase()))){
       fs.mkdirSync('./commands/economy/money/' + message.guild.name.toLowerCase());
     }
-    if(!fs.existsSync(file)){
+    if(!(fs.existsSync(file))){
       fs.appendFileSync(file,'100');
     }
-    message.reply('What is ' + num1 + ' ' + sign + ' ' + num2) + '?';
-    const collector = message.channel.createCollector((m => m.content.typeOf() == 'number'),
+    message.reply('What is ' + num1 + ' ' + sign + ' ' + num2 + '?');
+    const collector = message.channel.createCollector((m => m.author.id == message.author.id),
     { time: 12000});
     collector.on('message', m => {
       if(parseInt(m.content) == answer){
         right = true;
+        collector.stop();
+      }else{
+        right = false;
         collector.stop();
       }
     });
@@ -64,7 +68,7 @@ class WorkCommand extends Commando.Command {
         var money = parseInt(fs.readFileSync(file));
         money+=10;
         fs.writeFileSync(file,money.toString());
-      }else if(collected.array[0] == undefined){
+      }else if(collected.array()[0] == undefined){
         message.reply('Time ran out!');
       }else{
         message.reply('Wrong!');

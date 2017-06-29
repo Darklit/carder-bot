@@ -30,28 +30,19 @@ class BlackjackCommand extends Commando.Command {
     if(!fs.existsSync('./commands/economy/money/' + message.guild.name.toLowerCase())){
       fs.mkdirSync('./commands/economy/money/' + message.guild.name.toLowerCase());
     }
-    if(this.pot == undefined){
-      this.pot = 0;
-    }
-    if(this.players == undefined){
-      this.players = [];
-    }
     if(this.progress == undefined){
       this.progress = false;
-    }
-    if(this.playernum == undefined){
-      this.playernum = 0;
     }
     if(!this.progress){
       if(this.checkMoney(message,message.member)){
         var money = parseInt(fs.readFileSync(file));
         if(money>=args.money){
           money-=args.money;
-          this.players[0] = message.member;
-          this.pot = args.money;
-          this.playernum++;
+          var players = [message.member];
+          var pot = args.money;
+          var playernum = 1;
           fs.writeFileSync(file,money.toString());
-          this.game(message);
+          this.game(message,players,pot,playernum);
         }else{
           message.reply("You don't have that much money!");
         }
@@ -75,11 +66,10 @@ class BlackjackCommand extends Commando.Command {
       return true;
     }
   }
-  game(message){
-    var collectors = [];
+  game(message,players,pot,playernum){
     var file = '';
     this.mes = message;
-    var setbet = this.pot;
+    var setbet = pot;
     var check = true;
     this.progress = true;
     const collector = message.channel.createCollector(
@@ -91,8 +81,8 @@ class BlackjackCommand extends Commando.Command {
     collector.on('message', m => {
       console.log(m.content);
       if(!(m.content.toLowerCase() == 'stop')){
-        for(var i = 0; i < this.players.length; i++){
-          if(this.players[i].user.id == m.author.id){
+        for(var i = 0; i < players.length; i++){
+          if(players[i].user.id == m.author.id){
             m.reply("You're already registered!");
             check = false;
             break;
@@ -104,11 +94,11 @@ class BlackjackCommand extends Commando.Command {
           file = ('./commands/economy/money/' + message.guild.name.toLowerCase() + '/' + m.member.displayName.toLowerCase() + '.txt');
           var money = parseInt(fs.readFileSync(file));
           if(money>=m.content){
-            if(money>=setbet){
-              money-=m.content;
+            if(m.content>=setbet){
+              money-= parseInt(m.content);
               fs.writeFileSync(file,money.toString());
-              this.pot+=m.content;
-              this.players[this.playernum] = m.member;
+              pot += parseInt(m.content);
+              players[playernum] = m.member;
               m.reply('You have been registered!');
             }else{
               m.reply('You must bet over or the same as the set bet!');
@@ -122,22 +112,25 @@ class BlackjackCommand extends Commando.Command {
       }
     });
     collector.on('end', collected => {
-      this.begin(message);
+      this.begin(message,players,pot,playernum);
     });
   }
-  begin(message){
-    var done = 0;
-    if(this.nums == undefined){
-      this.nums = [];
+  begin(message,players,pot,playernum){
+    var usernames = [];
+    for(var i = 0; i < players.length; i++){
+      usernames[i] = players[i].user.username;
     }
-    for(var i = 0; i < this.players.length; i++){
+    var collectors = [];
+    var done = 0;
+    var nums = [];
+    for(var i = 0; i < players.length; i++){
       var randomNum = Math.floor(Math.random()*10);
       if(randomNum == 0){
         randomNum++;
       }
-      this.nums[i] = randomNum;
-      this.players[i].user.send('Your number is ' + this.nums[i] + '. Hit or stand?');
-      collectors[i] = this.players[i].user.dmChannel.createCollector(
+      nums[i] = randomNum;
+      players[i].user.send('Your number is ' + nums[i] + '. Hit or stand?');
+      collectors[i] = players[i].user.dmChannel.createCollector(
         m => (m.content.toLowerCase() == 'hit') || (m.content.toLowerCase() == 'stand')
       );
       collectors[i].on('message', m => {
@@ -146,50 +139,53 @@ class BlackjackCommand extends Commando.Command {
           if(rnum == 0){
             rnum++;
           }
-          this.nums[i]+= rnum;
-          if(this.nums[i] > 21){
-            collectors[i].stop();
+          nums[usernames.indexOf(m.author.username)]+= rnum;
+          if(nums[usernames.indexOf(m.author.username)] > 21){
+            collectors[usernames.indexOf(m.author.username)].stop();
             m.reply('You are over 21! Please wait for other players.');
           }else{
-            m.reply('Your number is ' + this.nums[i] + '. Hit or stand?');
+            m.reply('Your number is ' + nums[usernames.indexOf(m.author.username)] + '. Hit or stand?');
           }
         }else if(m.content.toLowerCase() == 'stand'){
           m.reply('Please wait for other players.');
-          collectors[i].stop();
+          collectors[usernames.indexOf(m.author.username)].stop();
         }
       });
       collectors[i].on('end', collected => {
         done++;
-        if(done == this.players.length){
-          this.endGame(message);
+        if(done == players.length){
+          this.endGame(message,players,pot,playernum,nums);
+        }else{
+          console.log(done);
         }
       });
     }
   }
-  endGame(message){
-    var refined = this.nums;
-    for(var i = 0; i < refined.length; i++){
-      if(refined[i] > 21){
-        refined[i]+=21;
+  endGame(message,players,pot,playernum,nums){
+    var bjRevised = [];
+    for(var i = 0; i < nums.length; i++){
+      if(nums[i] <= 21){
+        bjRevised[i] = Math.abs((nums[i] - 21));
+      }else if(nums[i]>= 21){
+        bjRevised[i] = nums[i];
       }
-      refined[i]-=21;
     }
-    var max = Math.max.apply(null,refined);
-    var max2 = max + 21;
-    if(max2>=21){
-      max2-=21;
+    console.log('here');
+
+    var max = Math.abs(Math.min.apply(null,bjRevised));
+    max = Math.abs(Math.min(max));
+    console.log(max + ':max');
+    for(var i = 0; i < nums.length; i++){
+      console.log(nums[i] + ':' + i);
+      console.log(bjRevised[i] + '::' + i);
     }
 
-    message.channel.send(this.players[this.nums.indexOf(max2)].displayName + ' won with ' + max2);
-    var file = './commands/economy/money/' + message.guild.name.toLowerCase() + '/' + this.players[this.nums.indexOf(max2)].displayName.toLowerCase() + '.txt';
+    message.channel.send(players[bjRevised.indexOf(max)].displayName + ' won with ' + nums[bjRevised.indexOf(max)]);
+    var file = './commands/economy/money/' + message.guild.name.toLowerCase() + '/' + players[bjRevised.indexOf(max)].displayName.toLowerCase() + '.txt';
     var money = parseInt(fs.readFileSync(file));
-    money+=this.pot;
+    money+=pot;
     fs.writeFileSync(file,money.toString());
-    this.nums = [];
-    this.pot = 0;
-    this.players = [];
     this.progress = false;
-    this.playernum = 0;
   }
 }
 
