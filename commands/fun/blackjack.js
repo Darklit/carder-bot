@@ -122,20 +122,74 @@ class BlackjackCommand extends Commando.Command {
       }
     });
     collector.on('end', collected => {
-      this.begin();
+      this.begin(message);
     });
   }
-  begin(){
+  begin(message){
+    var done = 0;
     if(this.nums == undefined){
       this.nums = [];
     }
     for(var i = 0; i < this.players.length; i++){
-      this.nums[i] = Math.floor(Math.random()*10);
+      var randomNum = Math.floor(Math.random()*10);
+      if(randomNum == 0){
+        randomNum++;
+      }
+      this.nums[i] = randomNum;
       this.players[i].user.send('Your number is ' + this.nums[i] + '. Hit or stand?');
       collectors[i] = this.players[i].user.dmChannel.createCollector(
-        m => (parseInt()) //WIP
-      )
+        m => (m.content.toLowerCase() == 'hit') || (m.content.toLowerCase() == 'stand')
+      );
+      collectors[i].on('message', m => {
+        if(m.content.toLowerCase() == 'hit'){
+          var rnum = Math.floor(Math.random()*10);
+          if(rnum == 0){
+            rnum++;
+          }
+          this.nums[i]+= rnum;
+          if(this.nums[i] > 21){
+            collectors[i].stop();
+            m.reply('You are over 21! Please wait for other players.');
+          }else{
+            m.reply('Your number is ' + this.nums[i] + '. Hit or stand?');
+          }
+        }else if(m.content.toLowerCase() == 'stand'){
+          m.reply('Please wait for other players.');
+          collectors[i].stop();
+        }
+      });
+      collectors[i].on('end', collected => {
+        done++;
+        if(done == this.players.length){
+          this.endGame(message);
+        }
+      });
     }
+  }
+  endGame(message){
+    var refined = this.nums;
+    for(var i = 0; i < refined.length; i++){
+      if(refined[i] > 21){
+        refined[i]+=21;
+      }
+      refined[i]-=21;
+    }
+    var max = Math.max.apply(null,refined);
+    var max2 = max + 21;
+    if(max2>=21){
+      max2-=21;
+    }
+
+    message.channel.send(this.players[this.nums.indexOf(max2)].displayName + ' won with ' + max2);
+    var file = './commands/economy/money/' + message.guild.name.toLowerCase() + '/' + this.players[this.nums.indexOf(max2)].displayName.toLowerCase() + '.txt';
+    var money = parseInt(fs.readFileSync(file));
+    money+=this.pot;
+    fs.writeFileSync(file,money.toString());
+    this.nums = [];
+    this.pot = 0;
+    this.players = [];
+    this.progress = false;
+    this.playernum = 0;
   }
 }
 
