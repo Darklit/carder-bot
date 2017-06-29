@@ -1,6 +1,5 @@
 const Commando = require('discord.js-commando');
 const fs = require('fs');
-const file = ('./commands/economy/money.txt');
 
 //Change Name
 class MoneyCommand extends Commando.Command {
@@ -25,16 +24,21 @@ class MoneyCommand extends Commando.Command {
   }
 
   run(message,args){
-    if(fs.existsSync('./commands/economy/' + message.guild.name.toLowerCase())){
-      var file = ('./commands/economy/' + message.guild.name.toLowerCase() + '/' + message.member.displayName.toLowerCase() + '.txt');
-      if(fs.existsSync(file)){
-        var content = fs.readFileSync(file);
-        message.reply('You have ' + content + ' dollars.');
-      }else{
-        fs.appendFileSync(file,'100');
-      }
+    if(!fs.existsSync('./commands/economy/money/' + message.guild.name.toLowerCase())){
+      fs.mkdirSync('./commands/economy/money/' + message.guild.name.toLowerCase());
+    }
+    var file = ('./commands/economy/money/' + message.guild.name.toLowerCase() + '/' + message.member.displayName.toLowerCase() + '.txt');
+    if(fs.existsSync(file)){
+      var content = fs.readFileSync(file);
+      message.reply('You have ' + content + ' dollars.');
     }else{
-      fs.mkdirSync('./commands/economy/' + message.guild.name.toLowerCase());
+      fs.appendFile(file,'100',(err) => {
+        if(err){
+          message.reply('Error creating your money file. Perhaps an error with your name.');
+        }else{
+          message.reply('You have 100 dollars');
+        }
+      });
     }
   }
 }

@@ -1,7 +1,6 @@
 const Commando = require('discord.js-commando');
 const config = require('../../config.js');
 const fs = require('fs');
-const file = ('./commands/economy/money.txt');
 //Change Name
 class SetMoneyCommand extends Commando.Command {
   constructor(client) {
@@ -30,49 +29,22 @@ class SetMoneyCommand extends Commando.Command {
   }
 //Subject to change
   run(message,args){
-    var user = args.name.toLowerCase().replace('_',' ');
-    while(user.includes('_')){
-      user = user.replace('_',' ');
-    }
-    console.log(user);
-    var client1 = this.client;
-    var setMon = args.money;
     if(message.author.id == config.ownerid){
+      if(!fs.existsSync('./commands/economy/money/' + message.guild.name.toLowerCase())){
+        fs.mkdirSync('./commands/economy/money/' + message.guild.name.toLowerCase());
+      }
+      var file = ('./commands/economy/money/' + message.guild.name.toLowerCase() + '/' + args.name.toLowerCase().replace('_',' ') + '.txt');
       if(!fs.existsSync(file)){
-        fs.appendFile(file,'',(err)=> {
-          if (err) throw err;
-          console.log('file created');
+        fs.appendFile(file,args.money.toString(),(err) => {
+          if(err){
+            message.reply('Error creating money file.');
+          }
         });
-      }
-      this.readMoney().then(function(res) {
-        var dat = res;
-        client1.registry.resolveCommand('economy:setmoney').setMoney(user,setMon,res);
-      })
-      .catch(console.error);
-    }
-  }
-  readMoney(){
-    return new Promise(function (fulfill, reject){
-      fs.readFile(file, 'utf8', function (err,res){
-        if(err) reject(err);
-        else fulfill(res);
-      });
-    });
-  }
-  setMoney(name,money,data){
-    var moneyList = data.split('  ');
-    for(var i = 0; i<moneyList.length;i++){
-      if(moneyList[i].includes(name)){
-        moneyList[i] = (name + money + '  ');
       }else{
-        moneyList[i] = moneyList[i] + "  ";
+        fs.writeFileSync(file,args.money.toString());
       }
+      message.reply('Money set');
     }
-    var final = moneyList.join();
-    while(final.includes(',')){
-      final = final.replace(',','');
-    }
-    fs.writeFileSync(file,final);
   }
 }
 

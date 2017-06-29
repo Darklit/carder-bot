@@ -25,6 +25,7 @@ class TestCommand extends Commando.Command {
 
   run(message,args){
     //Does nothing cause I'm not testing anything.
+  }
 }
 
 //End name

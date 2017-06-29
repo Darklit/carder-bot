@@ -11,7 +11,12 @@
   "dependencies": {
     "discord.js": "^11.0.0",
     "discord.js-commando": "^0.9.0",
+    "html-entities": "^1.2.1",
+    "miniget": "^1.0.0",
+    "opusscript": "0.0.3",
     "request": "^2.81.0",
+    "tweetnacl": "^1.0.0",
+    "uws": "^8.14.0",
     "ytdl-core": "^0.14.4"
   }
 }

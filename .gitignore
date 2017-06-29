@@ -3,3 +3,4 @@ config.js
 *.txt
 template.js
 start.bat
+/money
