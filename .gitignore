@@ -4,3 +4,4 @@ config.js
 template.js
 start.bat
 /money
+client_secret.json
