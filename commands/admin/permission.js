@@ -73,9 +73,17 @@ class PermissionCommand extends Commando.Command {
   }
   addPermission(args,perms,message){
     var exists = false;
+    var members = message.guild.members.array();
+    var group = args.group
+    for(var i = 0; i < members.length; i++){
+      if(args.group.toLowerCase() == members[i].displayName.toLowerCase()){
+        group = members[i].user.id;
+        break;
+      }
+    }
     if(perms[args.permission]){
       for(var i = 0; i < perms[args.permission].length; i++){
-        if(args.group.toLowerCase() == perms[args.permission][i].toLowerCase()){
+        if(group.toLowerCase() == perms[args.permission][i].toLowerCase()){
           exists = true;
           break;
         }else{
@@ -84,7 +92,7 @@ class PermissionCommand extends Commando.Command {
       }
       if(!exists){
         var newPerms = perms;
-        newPerms[args.permission][perms[args.permission].length] = args.group.toLowerCase();
+        newPerms[args.permission][perms[args.permission].length] = group;
         return newPerms;
       }else{
         message.reply('Permission already exists!');
@@ -97,9 +105,17 @@ class PermissionCommand extends Commando.Command {
   }
   removePermission(args,perms,message){
     var exists = false;
+    var members = message.guild.members.array();
+    var group = args.group;
+    for(var i = 0; i < members.length; i++){
+      if(args.group.toLowerCase() == members[i].displayName.toLowerCase()){
+        group = members[i].user.id;
+        break;
+      }
+    }
     if(perms[args.permission]){
       for(var i = 0; i < perms[args.permission].length; i++){
-        if(perms[args.permission][i].toLowerCase() == args.group.toLowerCase()){
+        if(perms[args.permission][i].toLowerCase() == group.toLowerCase()){
           exists = true;
           break;
         }
@@ -110,7 +126,7 @@ class PermissionCommand extends Commando.Command {
         var newArray = [];
         var arrayNum = 0;
         for(var i = 0; i < newPerms[args.permission].length; i++){
-          if(newPerms[args.permission][i].toLowerCase() == args.group.toLowerCase()){
+          if(newPerms[args.permission][i].toLowerCase() == group.toLowerCase()){
             console.log('removed');
           }else{
             newArray[arrayNum] = newPerms[args.permission][i];
