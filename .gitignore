@@ -1,8 +1,8 @@
-config.js
+﻿config.js
 /node_modules
 *.txt
 template.js
 start.bat
-/money
+commands/economy/money
 client_secret.json
-/permissions
+commands/admin/permissions
