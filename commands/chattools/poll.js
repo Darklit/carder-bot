@@ -29,7 +29,7 @@ class PollCommand extends Commando.Command {
     //Asks the user for the options and then puts them in an array.
     message.reply('What do you want for the options? Say stop to stop creating options.');
     const collector = message.channel.createCollector(
-      m => m.author.id == message.author.id,
+      m => m.author.id == message.author.id
     );
     collector.on('message', m => {
       //Stops collecting options if they say stop.
