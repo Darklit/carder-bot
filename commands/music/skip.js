@@ -54,7 +54,7 @@ class SkipCommand extends Commando.Command {
             message.channel.sendMessage(skips + '/' + (mems.length - 1) + ' voted to skip.');
             if(skips>= Math.floor((mems.length/2))){
               //If the majority of people vote then it will skip.
-              client1.registry.resolveCommand('music:play').dispatcher.end();
+              client1.registry.resolveCommand('music:play').queue[message.guild.name.toLowerCase()].dispatcher.end();
               message.channel.sendMessage('Skipped!');
               collector.stop();
             }

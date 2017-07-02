@@ -27,7 +27,8 @@ class ForceSkipCommand extends Commando.Command {
   run(message,args){
     //If the owner issues this command it will skip the current song.
     if((message.author.id == config.ownerid) || (this.checkPermission1(message))){
-      this.client.registry.resolveCommand('music:play').dispatcher.end();
+      var guildName = message.guild.name.toLowerCase()
+      this.client.registry.resolveCommand('music:play').queue[guildName].dispatcher.end();
       message.reply('Skipped!');
     }else{
       message.reply('Insufficient permissions');
