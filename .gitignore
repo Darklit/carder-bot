@@ -6,3 +6,4 @@ start.bat
 commands/economy/money
 client_secret.json
 commands/admin/permissions
+commands/chattools/plans.json
